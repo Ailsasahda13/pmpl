@@ -22,4 +22,9 @@ def test_no_notifications():
 def test_zero_qty_is_rejected():
     with pytest.raises(ValueError) as err:
         order_total(25000, 0)
-    # assert "qty" in str(err.value)  
+    assert "qty" in str(err.value) 
+
+def test_negative_qty_is_rejected():
+    with pytest.raises(ValueError) as err:
+        order_total(25000, -1)
+    assert "qty" in str(err.value) 
