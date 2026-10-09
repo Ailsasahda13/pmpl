@@ -5,3 +5,25 @@ def order_total(unit_price, qty, has_promo=False):
     if has_promo and subtotal >= 50000:
         return int(subtotal * 0.9)
     return subtotal
+
+class Result:
+    def __init__(self, rejected, message):
+        self.rejected = rejected
+        self.message = message
+
+class Order:
+    def __init__(self, id, owner, total):
+        self.id, self.owner, self.total = id, owner, total
+        self.status = "UNPAID"
+        self.tenant_notifications = []
+
+    def cancel(self, by):
+        if self.status == "PROCESSING":
+            return Result(
+                rejected=True,
+                message="Order is being processed"
+            )
+
+        self.status = "CANCELLED"
+        self.tenant_notifications.append("cancelled")
+        return Result(rejected=False, message="Cancelled")

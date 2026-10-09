@@ -1,5 +1,5 @@
 import pytest
-from campusgo.order import order_total
+from campusgo.order import order_total, Order
 
 # --- LAB 1 TEST ---
 def test_order_total_with_promo():
@@ -28,3 +28,22 @@ def test_negative_qty_is_rejected():
     with pytest.raises(ValueError) as err:
         order_total(25000, -1)
     assert "qty" in str(err.value) 
+
+# --- LAB 4: FIXTURES AS PRECONDITIONS ---
+
+@pytest.fixture
+def processing_order():
+    order = Order(id="ORD-T003", owner="U-01", total=25000)
+    order.status = "PROCESSING"
+    yield order
+    order.status = "UNPAID"
+    order.tenant_notifications.clear()
+
+
+def test_processing_order_cannot_be_cancelled(processing_order):
+    result = processing_order.cancel(by="U-01")
+
+    assert result.rejected is True
+    assert result.message == "Order is being processed"
+    assert processing_order.status == "PROCESSING"
+    assert processing_order.tenant_notifications == []
