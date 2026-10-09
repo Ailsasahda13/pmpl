@@ -47,3 +47,17 @@ def test_processing_order_cannot_be_cancelled(processing_order):
     assert result.message == "Order is being processed"
     assert processing_order.status == "PROCESSING"
     assert processing_order.tenant_notifications == []
+
+# --- LAB 5: PARAMETERISATION ---
+
+@pytest.mark.parametrize(
+    "price, qty, promo, expected",
+    [
+        (25000, 1, True, 25000),
+        (25000, 2, True, 45000),
+        (25000, 3, True, 67500),
+        (25000, 2, False, 50000),
+    ]
+)
+def test_order_total_boundary_values(price, qty, promo, expected):
+    assert order_total(price, qty, promo) == expected
